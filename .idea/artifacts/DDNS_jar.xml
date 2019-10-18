@@ -1,10 +1,12 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="DDNS:jar">
+  <artifact name="DDNS:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/DDNS_jar</output-path>
-    <root id="archive" name="DDNS.jar">
-      <element id="module-output" name="DDNS" />
-      <element id="extracted-dir" path="$USER_HOME$/Downloads/aliyun-java-sdk-core-4.1.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/Downloads/gson-2.8.5.jar" path-in-jar="/" />
+    <root id="root">
+      <element id="archive" name="DDNS.jar">
+        <element id="module-output" name="DDNS" />
+      </element>
+      <element id="library" level="project" name="aliyun-java-sdk-alidns-2.0.10" />
+      <element id="file-copy" path="$USER_HOME$/Downloads/gson-2.8.5.jar" />
     </root>
   </artifact>
 </component>
