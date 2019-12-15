@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="erect-utils-1.1-jar-with-dependencies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/erect-utils-1.1-jar-with-dependencies.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

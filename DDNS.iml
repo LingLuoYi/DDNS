@@ -16,6 +16,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="aliyun-java-sdk-alidns-2.0.10" level="project" />
+    <orderEntry type="library" name="aliyun-java-sdk-core-4.2.0" level="project" />
+    <orderEntry type="library" name="erect-utils-1.1-jar-with-dependencies" level="project" />
   </component>
 </module>

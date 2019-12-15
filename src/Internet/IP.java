@@ -12,7 +12,7 @@ import java.net.URLConnection;
 
 public class IP {
 
-    public String get_ip(String ip_api) throws IOException {
+    public static String get_ip(String ip_api) throws IOException {
         String ip = null;
         InputStream ins = null;
         try {
@@ -29,7 +29,6 @@ public class IP {
             }
             JsonObject jsonObject = (JsonObject) new JsonParser().parse(webContent.toString());
             ip = jsonObject.get("ip").getAsString();
-//            System.out.println("获取到当前外网IP:"+ip);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
