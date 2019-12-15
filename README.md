@@ -11,7 +11,7 @@
 
 运行环境jre>=1.8
 
-参数说明：key_ip=accessKeyId,secret=accessSecret,time=扫描公网IP间隔时间ms,ip_url=获取公网IP的api,domain=要解析的域名,sub_domain=子域
+参数说明：key_ip=accessKeyId,secret=accessSecret,time=扫描公网IP间隔时间ms,ip_url=获取公网IP的api,domain=要解析的域名,sub_domain=子域,server=服务商（al  and  cf）
 
 如果是使用cloudflare,则key_ip为cloudflare的登录邮箱，secret为cloudflare的Origin CA Key，其他不变
 
