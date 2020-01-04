@@ -2,8 +2,11 @@ import aliyun.AliyunDns;
 import cloudflare.CloudflareDns;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.Level;
+import com.google.gson.Gson;
+import config.Config;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 
 public class Main {
@@ -35,53 +38,68 @@ public class Main {
         System.out.println("如果是使用cloudflare,则key_ip为cloudflare的登录邮箱，secret为cloudflare的Origin CA Key，其他不变");
         System.out.println("*********************************************************************************");
         System.out.println("开始初始化！");
-        String key_ip = "linglouyi@gmail.com";
-        String secret = "";
-        Integer time = 600000;
-        String ip_url = "http://whois.pconline.com.cn/ipJson.jsp?json=true";
-        String domain = "linglouyi.tk";
-        String sud_domain = "file";
-        String server = "cf";
+        Config.KeyIp = "linglouyi@gmail.com";
+        Config.Secret = "";
+        Config.Time = 600000;
+        Config.IpUrl = "http://whois.pconline.com.cn/ipJson.jsp?json=true";
+        Config.Domain = new String[]{"linglouyi.tk"};
+        Config.SubDomain = new String[]{"file"};
+        Config.Server = "cf";
+        Config.Config = "/Users/liyi/Desktop/DDNS/config.json";
         if (args.length != 0) {
             for (int i = 0; i < args.length; i++) {
                 String[] name = args[i].split("=");
-                if ("key_ip".equals(name[0])) {
-                    key_ip = name[1];
-                } else if ("secret".equals(name[0])) {
-                    secret = name[1];
-                } else if ("time".equals(name[0])) {
-                    time = Integer.valueOf(name[1]);
-                } else if ("ip_url".equals(name[0])) {
-                    ip_url = name[1];
-                } else if ("domain".equals(name[0])) {
-                    domain = name[1];
-                } else if ("sub_domain".equals(name[0])) {
-                    sud_domain = name[1];
-                } else if ("server".equals(name[0])){
-                    server = name[0];
-                } else {
-                    System.out.println("无效参数" + args[i] + "，退出！");
-                    return;
+                if ("config".equals(name[0])){
+                    Config.Config = name[1];
+                    break;
+                }else {
+                    if ("key_ip".equals(name[0])) {
+                        Config.KeyIp = name[1];
+                    } else if ("secret".equals(name[0])) {
+                        Config.Secret = name[1];
+                    } else if ("time".equals(name[0])) {
+                        Config.Time = Integer.parseInt(name[1]);
+                    } else if ("ip_url".equals(name[0])) {
+                        Config.IpUrl = name[1];
+                    } else if ("domain".equals(name[0])) {
+                        Config.Domain = new String[]{name[1]};
+                    } else if ("sub_domain".equals(name[0])) {
+                        Config.SubDomain = new String[]{name[1]};
+                    } else if ("server".equals(name[0])) {
+                        Config.Server = name[0];
+                    } else {
+                        System.out.println("无效参数" + args[i] + "，退出！");
+                        return;
+                    }
                 }
             }
         } else {
             System.out.println("程序将以默认产数运行！");
         }
-        System.out.println("当前key_ip:" + key_ip);
-        System.out.println("当前secret:" + secret);
-        System.out.println("当前time:" + time);
-        System.out.println("当前ip_url:" + ip_url);
-        System.out.println("当前domain:" + domain);
-        System.out.println("当前sub_domain:" + sud_domain);
-        System.out.println("当前server:" + server);
+        if (!"".equals(Config.Config)){
+            Map map = new Gson().fromJson(Config.txt2String(new File(Config.Config)),Map.class);
+            Config.KeyIp = (String) map.get("keyIp");
+            Config.Secret = (String) map.get("secret");
+            Config.Time = Double.valueOf(map.get("time").toString()).intValue();
+            Config.IpUrl = (String) map.get("ipUrl");
+            Config.Domain = (String[]) ((ArrayList) map.get("domain")).toArray(new String[0]);
+            Config.SubDomain = (String[])((ArrayList)map.get("subDomain")).toArray(new String[0]);
+            Config.Server = (String) map.get("server");
+        }
+        System.out.println("当前key_ip:" + Config.KeyIp);
+        System.out.println("当前secret:" + Config.Secret);
+        System.out.println("当前time:" + Config.Time);
+        System.out.println("当前ip_url:" + Config.IpUrl);
+        System.out.println("当前domain:" + Arrays.toString(Config.Domain));
+        System.out.println("当前sub_domain:" + Arrays.toString(Config.SubDomain));
+        System.out.println("当前server:" + Config.Server);
         System.out.println("初始化完成！");
 
 
         System.out.println();
 
-
         Timer timer = new Timer();
-        timer.schedule(new Task(key_ip, secret, ip_url, domain, sud_domain, server), new Date(), time);
+        timer.schedule(new Task(Config.KeyIp, Config.Secret, Config.IpUrl, Config.Domain, Config.SubDomain, Config.Server), new Date(), Config.Time);
     }
 }
 
@@ -90,36 +108,35 @@ class Task extends TimerTask {
     private String keyIp;
     private String secret;
     private String ipUrl;
-    private String domain;
-    private String subDomain;
+    private String[] domains;
+    private String[] subDomains;
     private String server;
-
-    private String zoneId;
 
     private Map<String,String> header = new HashMap<>();
 
-    public Task(String keyIp, String secret,String ipUrl, String domain, String subDomain,String server) {
+    public Task(String keyIp, String secret,String ipUrl, String[] domain, String[] subDomain,String server) {
         this.keyIp = keyIp;
         this.secret = secret;
         this.ipUrl = ipUrl;
-        this.domain = domain;
-        this.subDomain = subDomain;
+        this.domains = domain;
+        this.subDomains = subDomain;
         this.server = server;
         if ("cf".equals(server)){
             header.put("X-Auth-Email",keyIp);
             header.put("X-Auth-Key",secret);
             header.put("Content-Type","application/json");
-            zoneId = CloudflareDns.getZoneId(header,domain);
-            System.out.println("zoneId--->"+zoneId);
+            for (String d:domains) {
+                Config.ZoneIds.put(d,CloudflareDns.getZoneId(header,d));
+            }
         }
     }
 
     @Override
     public void run() {
         if ("al".equals(server)){
-            AliyunDns.dns(keyIp,secret,domain,subDomain,ipUrl);
+            AliyunDns.dns(keyIp,secret,domains,subDomains,ipUrl);
         }else if ("cf".equals(server)){
-            CloudflareDns.dns(header,domain,subDomain,ipUrl,zoneId);
+            CloudflareDns.dns(header,domains,subDomains,ipUrl);
         }else {
             System.out.println("暂时不支持当前解析方式哦");
         }

@@ -1,0 +1,10 @@
+{
+  "keyIp": "",
+  "secret": "",
+  "time": 60000,
+  "ipUrl": "",
+  "domain": ["linglouyi.tk"],
+  "subDomain": ["linglouyi.tk","file.linglouyi.tk"],
+  "server": "",
+  "help": "该字段未配置说明字段，可以保留也可以不保留，上面配置项基本与说明文件里的没啥区别，除了domain，和subDomain,我已经给出实例，照着配置就行了。配置的域名一定要在相关服务商手动设置解析后方可使用"
+}
